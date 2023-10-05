@@ -3,6 +3,9 @@
 #include <sstream>
 #include <vector>
 #include <fstream> 
+#include <iomanip>
+
+#define TRACO "---------------------------------------------------------------------------------------------------"
 using namespace std;
 
 class Aluno {
@@ -125,10 +128,15 @@ public:
         }
     }
 };
+
+//Prototipos funções
 void inserir(vector<Aluno>& alunos, string nomeArquivo);
-int buscarAluno(vector<Aluno> &alunos);
+int buscarAluno(vector<Aluno>& alunos, string nome_aluno);
 void alterarAluno(vector<Aluno>& alunos, string nomeArquivo);
-void excluirAluno(vector<Aluno> &alunos, string nomeArquivo);
+void excluirAluno(vector<Aluno>& alunos, string nomeArquivo);
+void listarAlunos(vector<Aluno>& alunos);
+//Prototipos funções
+
 int main(){
     bool continuar = true;
     int op;
@@ -153,7 +161,10 @@ int main(){
             alterarAluno(alunos, nomeArquivo);
             break;
         case 3:
-            alterarAluno(alunos, nomeArquivo);
+            excluirAluno(alunos, nomeArquivo);
+            break;
+        case 4:
+            listarAlunos(alunos);
             break;
         case 0:
             continuar=false;
@@ -172,97 +183,91 @@ void inserir(vector<Aluno>& alunos, string nomeArquivo){
     int index;
     do
     {
-        cout << "Digite o nome do aluno: ";
+        cout << "Digite o nome do aluno: " << endl;
         cin>>nome;
-        index = buscarAluno(alunos);
+        index = buscarAluno(alunos, nome);
         if(index != -1){
-            cout << "Ops! Aluno já existe no banco de dados.";
+            cout << "Ops! Aluno já existe no banco de dados." << endl;
             nome = "";
         }
     } while (nome == "");
     
-    cout << "Digite o email do aluno: ";
+    cout << "Digite o email do aluno: " << endl;
     cin >> email;
     do
     {
-        cout << "Digite a nota 1: [0-100]";
+        cout << "Digite a nota 1: [0-100]" << endl;
         cin >> nota1;
     } while (nota1 < 0 || nota1 > 100);
     
     do
     {
-        cout << "Digite a nota 2: [0-100]";
+        cout << "Digite a nota 2: [0-100]" << endl;
         cin >> nota2;
     } while (nota2 < 0 || nota2 > 100);
     
     Aluno novoAluno(nome, email, nota1, nota2);
+    alunos.push_back(novoAluno);
     BancoDeDados :: salvarDadosAluno(novoAluno, nomeArquivo);
 }
 
 void alterarAluno(vector<Aluno>& alunos, string nomeArquivo)
 {
     bool sair = true;
-    int opcao;
+    char opcao;
     string nome;
     Aluno aluno;
     int index;
 
-    cout << "Insira o nome do aluno que deseja alterar: ";
+    cout << "Insira o nome do aluno que deseja alterar: " << endl;
     cin>>nome;
     index = buscarAluno(alunos, nome);
-    if (index >= 0)
-    {
+    if (index >= 0){
         aluno = alunos[index];
-        do
-        {
-            cout  << endl ;
-            cout << "Aluno: " << aluno.getNome() << endl;
-            cout << "Nota 1: " << aluno.getNota1() << endl;
-            cout << "Nota 2: " << aluno.getNota2() << endl;
+        cout  << endl ;
+        cout << "Aluno: " << aluno.getNome() << endl;
+        cout << "Email: " << aluno.getEmail() << endl;
+        cout << "Nota 1: " << aluno.getNota1() << endl;
+        cout << "Nota 2: " << aluno.getNota2() << endl;
 
-            cout << "1. Alterar email" << endl;
-            cout << "2. Alterar primeira nota" << endl;
-            cout << "3. Alterar segunda nota" << endl;
-            cout << "0. Nada" << endl;
+        string email;
+        int nota;
 
-            cout << "\nOpção: ";
-            cin >> opcao;
-            string email;
-            int nota;
-            switch (opcao){
-            case 1:
-                cout << "Digite o email: ";
-                cin >> email;
-                alunos[index].setEmail(email);
-                break;
-
-            case 2:
-                cout << "Digite o nota 1: ";
+        cout << "Deseja alterar o email? (s/n) ";
+        cin >> opcao;
+        if (opcao == 's'){
+            cout << "Digite o email: " << endl;
+            cin >> email;
+            alunos[index].setEmail(email);
+        }
+            
+        cout << "Deseja alterar a nota 1? (s/n) ";
+        cin >> opcao;
+        if (opcao == 's'){
+            do{
+                cout << "Digite a nota 1: [0-100]" << endl;
                 cin >> nota;
-                alunos[index].setNota1(nota);
-                break;
-
-                
-            case 3:
-                cout << "Digite o nota 2: ";
+            } while (nota < 0 || nota > 100);
+            alunos[index].setNota1(nota);
+        }
+            
+        cout << "Deseja alterar a nota 2? (s/n) ";
+        cin >> opcao;
+        if (opcao == 's'){
+            do{
+                cout << "Digite a nota 1: [0-100]" << endl;
                 cin >> nota;
-                alunos[index].setNota2(nota);
-                break;
-
-            default:
-               sair = false;
-               break;
-            }
-        } while (sair);
- 
-    BancoDeDados :: salvarDadosTudo(alunos, nomeArquivo);
+            } while (nota < 0 || nota > 100);
+            alunos[index].setNota2(nota);
+        }
+        BancoDeDados :: salvarDadosTudo(alunos, nomeArquivo);
     }
     else
     {
         cout << "Aluno não encontrado." << endl;
     }
 }
-int buscarAluno(vector<Aluno> &alunos, string nome_aluno)
+int buscarAluno(vector<Aluno>& alunos, string nome_aluno)
 {
     int qtd_alunos = alunos.size();
     for (int i = 0; i < qtd_alunos; i++)
@@ -273,34 +278,30 @@ int buscarAluno(vector<Aluno> &alunos, string nome_aluno)
     }
     return -1;
 }
-void excluirAluno(vector<Aluno> &alunos)
-{
-
-    bool para = false;
-    char escolha;
-    do
-    {
+void excluirAluno(vector<Aluno>& alunos, string nomeArquivo){
         string nome;
         cout << "Insira o nome do aluno que deseja excluir: ";
         cin>>nome;
         int indice = buscarAluno(alunos, nome);
 
-        if (indice != -1)
-        {
+        if (indice != -1){
             alunos.erase(alunos.begin() + indice);
             cout << "Aluno removido com sucesso!" << endl;
+
+            BancoDeDados :: salvarDadosTudo(alunos, nomeArquivo);
         }
-        else
-        {
+        else{
             cout << "Aluno não encontrado, portanto nenhum aluno foi removido." << endl;
         }
-        cout << "Deseja excluir mais algum aluno? (s/n): ";
-        cin >> escolha;
+}
+void listarAlunos(vector<Aluno>& alunos){
+    cout << TRACO << endl;
+    cout << left << setw(40) << "NOME" << setw(16) << "NOTA 1" << setw(16) << "NOTA 2"  << endl;
+    cout << TRACO << endl;
 
-        if (escolha != 's' && escolha != 'S')
-        {
-            cout << "\n\nInforme o nome do aluno que deseja Excluir: " << endl;
-            para = true;
-        }
-    } while (para == false);
+    for (Aluno &aluno : alunos)
+        cout << left << setw(40) << aluno.getNome() << setw(16) << setprecision(2) << aluno.getNota1() << setw(16) << setprecision(2) << aluno.getNota2() << endl;
+    
+    cout << TRACO << endl;
+
 }

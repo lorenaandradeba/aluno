@@ -1,3 +1,6 @@
-Lorena,lorenaandrade@gmail.com,10,100
+Lorena,100,98,97
 Diego,diegoandradesd@gmail.com,10,100
-Lorena,lores@lores.com,100,100
+Lores,lores@lores.com,100,100
+Maria,maria@mari,90,90
+Joao,joao@hoaad.com.br,90,99
+Rita,rita,90,90
